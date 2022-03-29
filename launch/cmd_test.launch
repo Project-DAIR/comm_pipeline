@@ -1,0 +1,9 @@
+<launch>
+  <!-- Run the offboard position controller -->
+  <node name="cmd_test" pkg="comm_pipeline" type="cmd_test_node" />
+
+  <!-- Run MAVROS -->
+  <include file="$(find mavros)/launch/apm.launch" pass_all_args="true">
+    <arg name="fcu_url" default="udp://127.0.0.1:14551@14555" />
+  </include>
+</launch>
