@@ -17,7 +17,12 @@ include_directories(
 )
 
 add_executable(cmd_node src/cmd_test.cpp)
+add_executable(mode_test_node src/mode_test.cpp)
 
 target_link_libraries(cmd_node
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(mode_test_node
   ${catkin_LIBRARIES}
 )
