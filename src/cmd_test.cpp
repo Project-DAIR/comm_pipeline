@@ -3,6 +3,7 @@
 
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Point.h>
 
 #include <mavros_msgs/CommandBool.h>
 #include <mavros_msgs/SetMode.h>
@@ -18,7 +19,8 @@
 mavros_msgs::State current_state;         // current state of vtol, subscribed topic
 geometry_msgs::PoseStamped current_pose;  // current position wrt origin, subscribed topic
 
-geometry_msgs::PoseStamped pose;
+geometry_msgs::PoseStamped offset;          // move by offset 
+geometry_msgs::PoseStamped target_pose;  // target pose wrt origin
 
 float GYM_OFFSET;
 // ==============================================================================================================================================================
@@ -43,11 +45,47 @@ void setDestination(float x, float y, float z)
   float X = x*cos(-GYM_OFFSET*deg2rad) - y*sin(-GYM_OFFSET*deg2rad);
   float Y = x*sin(-GYM_OFFSET*deg2rad) + y*cos(-GYM_OFFSET*deg2rad);
   float Z = z;
-  pose.pose.position.x = X;
-  pose.pose.position.y = Y;
-  pose.pose.position.z = Z;
+  offset.pose.position.x = X;
+  offset.pose.position.y = Y;
+  offset.pose.position.z = Z;
   ROS_INFO("Destination set to x: %f y: %f z %f", X, Y, Z);
 }
+
+// calculate target pose wrt to origin(takeoff pose)
+void getTargetPose()
+{
+  target_pose.pose.position.x = offset.pose.position.x + current_pose.pose.position.x;
+  target_pose.pose.position.y = offset.pose.position.y + current_pose.pose.position.y;
+  target_pose.pose.position.z = offset.pose.position.z + current_pose.pose.position.z;
+  ROS_INFO("At Target, Current x: %f y: %f z %f",  current_pose.pose.position.x,  current_pose.pose.position.y,  current_pose.pose.position.z);
+  ROS_INFO("Target set to x: %f y: %f z %f",  target_pose.pose.position.x,  target_pose.pose.position.y,  target_pose.pose.position.z);
+}
+
+// check if x,y,z offset is within tolerance
+bool isClose(float n1, float n2, float tol=0.25){
+    return (abs(n1 - n2) <= tol);
+}
+
+// check if vtol has reached the set target/offset
+bool reachedTarget(geometry_msgs::Point t, float tol=0.25)
+{
+  if(isClose(current_pose.pose.position.x, t.x, tol=tol) && isClose(current_pose.pose.position.y, t.y, tol=tol) && isClose(current_pose.pose.position.z, t.z, tol=tol)){
+    return true;
+  }
+  else
+    return false;
+}
+
+// check if vtol is at a given altitude
+bool checkAlt(geometry_msgs::Point t, float tol=0.25)
+{
+  if(isClose(current_pose.pose.position.z, t.z, tol=tol)){
+    return true;
+  }
+  else
+    return false;
+}
+
 
 // ==============================================================================================================================================================
 // ==============================================================================================================================================================
@@ -128,16 +166,36 @@ int main(int argc, char **argv)
   }
 
 
-      ros::spinOnce();
-      ros::Duration(0.5).sleep();
-      if(i == 1)
-      {
-        ROS_INFO("Failed to reach destination. Stepping to next task.");
-      }
-    }
-    ROS_INFO("Done moving foreward.");
-  }
+  sleep(2);
+
+// ==============================================================================================================================================================
+// =================================================================== Sending Offset ===========================================================================
+// ==============================================================================================================================================================
+
+
+  geometry_msgs::PoseStamped state_pose;
+  // geometry_msgs::PoseStamped target_pose;
+
+
+  setDestination(0, 2, 0);
+  getTargetPose();
   
+  local_pos_pub.publish(offset);
+  sleep(0.5);
+  while(!reachedTarget(target_pose.pose.position, 0.25)){
+      // ROS_INFO("Waiting...");
+      ROS_INFO("Current Pose x: %f y: %f z %f", current_pose.pose.position.x, current_pose.pose.position.y, current_pose.pose.position.z);
+
+      ros::spinOnce();
+      ros::Duration(1).sleep();
+  }
+
+  
+
+// ==============================================================================================================================================================
+// ==============================================================================================================================================================
+  sleep(2);
+
   //land
   ros::ServiceClient land_client = nh.serviceClient<mavros_msgs::CommandTOL>("/mavros/cmd/land");
   mavros_msgs::CommandTOL srv_land;
