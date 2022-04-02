@@ -140,7 +140,7 @@ int main(int argc, char **argv)
 // ==============================================================================================================================================================
 
 // checks for delivery height - should modify to a gps location check
-  while(!checkAlt(target_alt, 0.05)){
+  while(!checkAlt(target_alt, 0.5)){
           // ROS_INFO("Waiting...");
           // ROS_INFO("Take Off Current Pose x: %f y: %f z %f", current_pose.pose.position.x, current_pose.pose.position.y, current_pose.pose.position.z);
 
