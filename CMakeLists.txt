@@ -5,14 +5,22 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   mavros_msgs
+  message_generation
 )
 
+add_service_files(
+  FILES
+  ActivateStag.srv
+)
+
+generate_messages(DEPENDENCIES std_msgs)
+
 catkin_package(
-#  CATKIN_DEPENDS message_runtime
+ CATKIN_DEPENDS message_runtime
 )
 
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -24,3 +32,11 @@ target_link_libraries(mode_test_node ${catkin_LIBRARIES})
 
 add_executable(comm_node src/comm_pipeline.cpp)
 target_link_libraries(comm_node ${catkin_LIBRARIES})
+
+add_executable(service_client src/service_client.cpp)
+target_link_libraries(service_client ${catkin_LIBRARIES})
+add_dependencies(service_client comm_pipeline_gencpp)
+
+add_executable(service_server src/service_server.cpp)
+target_link_libraries(service_server ${catkin_LIBRARIES})
+add_dependencies(service_server comm_pipeline_gencpp)
