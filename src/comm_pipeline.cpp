@@ -41,14 +41,10 @@ void CommPipeline::initializeClients(){
 
 // set position to fly to in the gym frame
 void CommPipeline::setDestination(float x, float y, float z){
-  float deg2rad = (M_PI/180);
-  float X = x*cos(-GYM_OFFSET*deg2rad) - y*sin(-GYM_OFFSET*deg2rad);
-  float Y = x*sin(-GYM_OFFSET*deg2rad) + y*cos(-GYM_OFFSET*deg2rad);
-  float Z = z;
-  offset.pose.position.x = X;
-  offset.pose.position.y = Y;
-  offset.pose.position.z = Z;
-  ROS_INFO("Destination set to x: %f y: %f z %f", X, Y, Z);
+  offset.pose.position.x = x;
+  offset.pose.position.y = y;
+  offset.pose.position.z = z;
+  ROS_INFO("Destination set to x: %f y: %f z %f", x, y, z);
 }
 
 // calculate target pose wrt to origin(takeoff pose)
@@ -127,6 +123,7 @@ void CommPipeline::pose_callback(const geometry_msgs::PoseStamped::ConstPtr& msg
     // setDestination(0, 2, 0);
     setDestination(marker_pose.x, marker_pose.y, marker_pose.z);
     getTargetPose();
+    ROS_INFO("Published Pose x: %f y: %f z %f", offset.pose.position.x, offset.pose.position.y, offset.pose.position.z);
     local_pos_pub.publish(offset);
     move = false;
   }
