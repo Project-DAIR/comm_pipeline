@@ -93,12 +93,13 @@ void CommPipeline::state_callback(const mavros_msgs::State::ConstPtr& msg){
     return;
   }
 
-  if(!checkAlt(target_alt, 0.5)){
-    return;
-  }
+  // if(!checkAlt(target_alt, 0.5)){
+  //   return;
+  // }
   
-  if(!checkAlt(target_alt, 0.5) && current_state.mode != "GUIDED"){
+  if(checkAlt(target_alt, 0.5) && current_state.mode != "GUIDED"){
     offb_set_mode.request.custom_mode = "GUIDED";
+    set_mode_client.call(offb_set_mode);
     ROS_INFO("Guided mode enabled...");
   }
 
@@ -111,13 +112,13 @@ void CommPipeline::pose_callback(const geometry_msgs::PoseStamped::ConstPtr& msg
     return;
   }
 
-  if(!checkAlt(target_alt, 0.5)){
+   if(checkAlt(target_alt, 0.8) && current_state.mode != "GUIDED"){
     return;
   }
 
-  if(current_state.mode != "GUIDED"){
-    return;
-  }
+  // if(current_state.mode != "GUIDED"){
+  //   return;
+  // }
 
   if(move){
     // setDestination(0, 2, 0);

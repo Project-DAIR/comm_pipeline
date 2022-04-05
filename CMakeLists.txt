@@ -24,3 +24,6 @@ target_link_libraries(mode_test_node ${catkin_LIBRARIES})
 
 add_executable(comm_node src/comm_pipeline.cpp)
 target_link_libraries(comm_node ${catkin_LIBRARIES})
+
+add_executable(marker_node src/marker.cpp)
+target_link_libraries(marker_node ${catkin_LIBRARIES})
