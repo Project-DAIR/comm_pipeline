@@ -4,6 +4,7 @@ project(comm_pipeline)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
+  geometry_msgs
   mavros_msgs
   message_generation
 )
@@ -11,9 +12,10 @@ find_package(catkin REQUIRED COMPONENTS
 add_service_files(
   FILES
   ActivateStag.srv
+  GetTarget.srv
 )
 
-generate_messages(DEPENDENCIES std_msgs)
+generate_messages(DEPENDENCIES std_msgs geometry_msgs)
 
 catkin_package(
  CATKIN_DEPENDS message_runtime
