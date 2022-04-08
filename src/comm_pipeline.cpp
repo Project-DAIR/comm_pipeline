@@ -16,7 +16,9 @@ CommPipeline::CommPipeline(ros::NodeHandle* nodehandle):nh(*nodehandle){
     marker_pose.y = 0;
     marker_pose.z = 0;
 
-    move = false;
+    is_moving = false;
+    prev_changed_to_guided = false;
+    started_visual_servoing = false;
     // ROS_INFO("Comm Constructor");
 }
 
@@ -97,54 +99,55 @@ void CommPipeline::state_callback(const mavros_msgs::State::ConstPtr& msg){
   //   return;
   // }
   
-  if(checkAlt(target_alt, 0.5) && current_state.mode != "GUIDED"){
+  /* 
+  Change to guided only when:
+    1. Not previously changed into GUIDED
+    2. Target altitude is reached
+    3. Not already in GUIDED
+  */
+  if(!prev_changed_to_guided && checkAlt(target_alt, 0.5) && current_state.mode != "GUIDED"){
     offb_set_mode.request.custom_mode = "GUIDED";
     set_mode_client.call(offb_set_mode);
     ROS_INFO("Guided mode enabled...");
+    prev_changed_to_guided = true;
+    started_visual_servoing = true;
   }
-
 }
 
 void CommPipeline::pose_callback(const geometry_msgs::PoseStamped::ConstPtr& msg){
   current_pose = *msg;
   // ROS_INFO("Current Pose x: %f y: %f z %f", current_pose.pose.position.x, current_pose.pose.position.y, current_pose.pose.position.z);
-  if(!current_state.connected){
+
+  if(!current_state.connected || current_state.mode != "GUIDED"){
     return;
   }
 
-   if(checkAlt(target_alt, 0.8) && current_state.mode != "GUIDED"){
+  if(!started_visual_servoing) {
     return;
   }
-
-  // if(current_state.mode != "GUIDED"){
-  //   return;
-  // }
-
-  if(move){
-    // setDestination(0, 2, 0);
+  
+  if(!is_moving){
     setDestination(marker_pose.x, marker_pose.y, marker_pose.z);
     getTargetPose();
     ROS_INFO("Published Pose x: %f y: %f z %f", offset.pose.position.x, offset.pose.position.y, offset.pose.position.z);
     local_pos_pub.publish(offset);
-    move = false;
+    is_moving = true;
   }
-
-  if(!reachedTarget(target_pose.pose.position, 0.5)){
-    return;
+  else if(reachedTarget(target_pose.pose.position, 0.5)){
+    is_moving = false;
   }
-
 }
 
 void CommPipeline::marker_callback(const geometry_msgs::Point::ConstPtr& msg){
   // ROS_INFO_STREAM("Current Mode: " << current_state.mode);
-  if(!current_state.connected){
-    return;
-  }
-  if(current_state.mode != "GUIDED"){
-    return;
-  }
-  marker_pose = *msg;
-  move = true;
+
+  // Marker comes in as NED frame but ROS expects ENU frame
+  marker.pose = *msg;
+
+  // marker_pose.x = msg->y; // East
+  // marker_pose.y = msg->x; // North
+  // marker_pose.z = -msg->z; // Up
+
 }
 
 // ==============================================================================================================================================================
@@ -154,13 +157,10 @@ void CommPipeline::marker_callback(const geometry_msgs::Point::ConstPtr& msg){
 // main function
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "offb_node");
+  ros::init(argc, argv, "offboard_node");
   ros::NodeHandle nh;
 
   CommPipeline comm_pipeline(&nh);
-
-  //the setpoint publishing rate MUST be faster than 2Hz
-  // ros::Rate rate(20.0);
   ROS_INFO("Communication Initialized... ");
   ros::spin();
 
