@@ -41,12 +41,11 @@ private:
 
     mavros_msgs::SetMode offb_set_mode;
 
-    float GYM_OFFSET;
-
     geometry_msgs::Point target_alt;
     geometry_msgs::Point marker_pose;
-    bool move;
-
+    bool is_moving;
+    bool prev_changed_to_guided;
+    bool started_visual_servoing;
 
     void initializeSubscribers();
     void initializePublishers();
