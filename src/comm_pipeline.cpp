@@ -18,13 +18,14 @@ CommPipeline::CommPipeline(ros::NodeHandle* nodehandle):nh(*nodehandle){
 
     is_moving = false;
     prev_changed_to_guided = false;
-    started_visual_servoing = false;
+    is_visual_servoing = false;
     // ROS_INFO("Comm Constructor");
 }
 
 void CommPipeline::initializeSubscribers(){
-    state_sub = nh.subscribe<mavros_msgs::State> ("mavros/state", 10, &CommPipeline::state_callback, this);  
-    pose_sub = nh.subscribe<geometry_msgs::PoseStamped> ("/mavros/local_position/pose", 10, &CommPipeline::pose_callback, this);
+    state_sub = nh.subscribe<mavros_msgs::State> ("mavros/state", 10, &CommPipeline::state_callback, this);
+    pose_sub = nh.subscribe<geometry_msgs::PoseStamped> ("mavros/local_position/pose", 10, &CommPipeline::pose_callback, this);  
+    nav_output_sub = nh.subscribe<mavros_msgs::NavControllerOutput> ("/mavros/nav_controller_output", 10, &CommPipeline::nav_controller_callback, this);
     marker_sub = nh.subscribe<geometry_msgs::Point> ("/marker", 10, &CommPipeline::marker_callback, this);
 // minimal_subscriber_ = nh_.subscribe("exampleMinimalSubTopic", 1, &ExampleRosClass::subscriberCallback,this);  
     
@@ -49,15 +50,6 @@ void CommPipeline::setDestination(float x, float y, float z){
   ROS_INFO("Destination set to x: %f y: %f z %f", x, y, z);
 }
 
-// calculate target pose wrt to origin(takeoff pose)
-void CommPipeline::getTargetPose(){
-  target_pose.pose.position.x = offset.pose.position.x + current_pose.pose.position.x;
-  target_pose.pose.position.y = offset.pose.position.y + current_pose.pose.position.y;
-  target_pose.pose.position.z = offset.pose.position.z + current_pose.pose.position.z;
-  ROS_INFO("Setting Target, Current Position x: %f y: %f z %f",  current_pose.pose.position.x,  current_pose.pose.position.y,  current_pose.pose.position.z);
-  ROS_INFO("Target set to x: %f y: %f z %f",  target_pose.pose.position.x,  target_pose.pose.position.y,  target_pose.pose.position.z);
-}
-
 // check if x,y,z offset is within tolerance
 bool CommPipeline::isClose(float n1, float n2, float tol){
     return (abs(n1 - n2) <= tol);
@@ -76,7 +68,7 @@ bool CommPipeline::reachedTarget(geometry_msgs::Point t, float tol){
 
 // check if vtol is at a given altitude
 bool CommPipeline::checkAlt(geometry_msgs::Point t, float tol){
-  if(CommPipeline::isClose(current_pose.pose.position.z, t.z, tol=tol)){
+  if(isClose(current_pose.pose.position.z, t.z, tol=tol)){
     return true;
   }
   else
@@ -110,31 +102,39 @@ void CommPipeline::state_callback(const mavros_msgs::State::ConstPtr& msg){
     set_mode_client.call(offb_set_mode);
     ROS_INFO("Guided mode enabled...");
     prev_changed_to_guided = true;
-    started_visual_servoing = true;
   }
 }
 
-void CommPipeline::pose_callback(const geometry_msgs::PoseStamped::ConstPtr& msg){
-  current_pose = *msg;
+void CommPipeline::nav_controller_callback(const mavros_msgs::NavControllerOutput::ConstPtr& msg){
   // ROS_INFO("Current Pose x: %f y: %f z %f", current_pose.pose.position.x, current_pose.pose.position.y, current_pose.pose.position.z);
 
   if(!current_state.connected || current_state.mode != "GUIDED"){
     return;
   }
 
-  if(!started_visual_servoing) {
+  if (!prev_changed_to_guided) {
+    return;
+  }
+
+  if(!is_visual_servoing) {
     return;
   }
   
   if(!is_moving){
+
+    // If we are too close then dont bother doing anything
+    if (abs(marker_pose.x) < 0.1 && abs(marker_pose.y) < 0.1) {
+      return;
+    }
+
     setDestination(marker_pose.x, marker_pose.y, marker_pose.z);
-    getTargetPose();
     ROS_INFO("Published Pose x: %f y: %f z %f", offset.pose.position.x, offset.pose.position.y, offset.pose.position.z);
     local_pos_pub.publish(offset);
     is_moving = true;
   }
-  else if(reachedTarget(target_pose.pose.position, 0.5)){
+  else if(msg->wp_dist < 0.2){
     is_moving = false;
+    is_visual_servoing = false;
   }
 }
 
@@ -142,12 +142,18 @@ void CommPipeline::marker_callback(const geometry_msgs::Point::ConstPtr& msg){
   // ROS_INFO_STREAM("Current Mode: " << current_state.mode);
 
   // Marker comes in as NED frame but ROS expects ENU frame
-  marker_pose = *msg;
+  marker_pose.x = msg->x;
+  marker_pose.y = msg->y;
+  marker_pose.z = 0;
 
+  is_visual_servoing = true;
   // marker_pose.x = msg->y; // East
   // marker_pose.y = msg->x; // North
   // marker_pose.z = -msg->z; // Up
+}
 
+void CommPipeline::pose_callback(const geometry_msgs::PoseStamped::ConstPtr& msg) {
+  current_pose = *msg;
 }
 
 // ==============================================================================================================================================================
