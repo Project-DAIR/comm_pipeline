@@ -5,7 +5,6 @@ bool activate(comm_pipeline::ActivateStag::Request  &req,
          comm_pipeline::ActivateStag::Response &res)
 {
   res.activated = true;
-  ROS_INFO("request: x=%d", req.activate);
   ROS_INFO("sending back response: [%d]", res.activated);
   return true;
 }

@@ -13,6 +13,7 @@ add_service_files(
   FILES
   ActivateStag.srv
   GetTarget.srv
+  FoundMarker.srv
 )
 
 generate_messages(DEPENDENCIES std_msgs geometry_msgs)
@@ -26,14 +27,8 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_executable(cmd_node src/cmd_test.cpp)
-target_link_libraries(cmd_node ${catkin_LIBRARIES})
-
-add_executable(mode_test_node src/mode_test.cpp)
-target_link_libraries(mode_test_node ${catkin_LIBRARIES})
-
-add_executable(comm_node src/comm_pipeline.cpp)
-target_link_libraries(comm_node ${catkin_LIBRARIES})
+add_executable(planner src/planner.cpp)
+target_link_libraries(planner ${catkin_LIBRARIES})
 
 add_executable(service_client src/service_client.cpp)
 target_link_libraries(service_client ${catkin_LIBRARIES})

@@ -8,7 +8,6 @@ int main(int argc, char **argv)
   ros::NodeHandle n;
   ros::ServiceClient client = n.serviceClient<comm_pipeline::ActivateStag>("activate_stag");
   comm_pipeline::ActivateStag srv;
-  srv.request.activate = true;
   if (client.call(srv))
   {
     ROS_INFO("received: %d", srv.response.activated);
