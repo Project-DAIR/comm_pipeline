@@ -17,6 +17,7 @@ CommPipeline::CommPipeline(ros::NodeHandle* nodehandle):nh(*nodehandle){
     marker_pose.z = 0;
 
     move = false;
+    changed_to_guided = false;
     // ROS_INFO("Comm Constructor");
 }
 

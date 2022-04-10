@@ -29,11 +29,16 @@ include_directories(
 
 add_executable(planner src/planner.cpp)
 target_link_libraries(planner ${catkin_LIBRARIES})
+add_dependencies(planner comm_pipeline_gencpp)
 
-add_executable(service_client src/service_client.cpp)
+add_executable(service_client test/service_client.cpp)
 target_link_libraries(service_client ${catkin_LIBRARIES})
 add_dependencies(service_client comm_pipeline_gencpp)
 
-add_executable(service_server src/service_server.cpp)
+add_executable(service_server test/service_server.cpp)
 target_link_libraries(service_server ${catkin_LIBRARIES})
 add_dependencies(service_server comm_pipeline_gencpp)
+
+add_executable(fake_marker test/fake_marker.cpp)
+target_link_libraries(fake_marker ${catkin_LIBRARIES})
+add_dependencies(fake_marker comm_pipeline_gencpp)
