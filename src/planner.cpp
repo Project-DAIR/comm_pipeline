@@ -1,17 +1,16 @@
-#include "planner.h"
+#include "comm_pipeline/planner.h"
 
 Planner::Planner(ros::NodeHandle *nodehandle) : nh_(*nodehandle),
-                                                is_moving_(false),
                                                 changed_to_guided_(false),
                                                 delivery_waypoint_reached_(false)
 {
-  initializeSubscribers(); // package up the messy work of creating subscribers; do this overhead in constructor
-  initializePublishers();
+  initializeSubscribers();
   initializeServices();
 
   ros::NodeHandle param_nh("~");
 
   param_nh.param("delivery_waypoint_number", delivery_waypoint_number_, 2);
+  param_nh.param("wp_threshold", wp_threshold_, 0.25f);
 }
 
 void Planner::initializeSubscribers()
@@ -21,21 +20,13 @@ void Planner::initializeSubscribers()
   mission_sub_ = nh_.subscribe<mavros_msgs::WaypointReached>("mavros/mission/reached", 10, &Planner::missionCallback, this);
 }
 
-void Planner::initializePublishers()
-{
-  local_pos_pub_ = nh_.advertise<geometry_msgs::PoseStamped>("mavros/setpoint_position/local", 10);
-}
-
 void Planner::initializeServices()
 {
-  // Second argument set to true means persistent connection to service (more efficient)
-  set_mode_client_ = nh_.serviceClient<mavros_msgs::SetMode>("mavros/set_mode", true);
-  activate_stag_client_ = nh_.serviceClient<comm_pipeline::ActivateStag>("marker/activate_stag", true);
-  get_target_client_ = nh_.serviceClient<comm_pipeline::GetTarget>("marker/get_target", true);
+  set_mode_client_ = nh_.serviceClient<mavros_msgs::SetMode>("mavros/set_mode");
+  activate_stag_client_ = nh_.serviceClient<comm_pipeline::ActivateStag>("marker/activate_stag");
 
   ros::service::waitForService("mavros/set_mode");
   ros::service::waitForService("marker/activate_stag");
-  ros::service::waitForService("marker/get_target");
   ROS_DEBUG("All service clients connceted succesfully");
 
   found_marker_server_ = nh_.advertiseService("planner/found_marker",
@@ -51,7 +42,7 @@ void Planner::activateStag()
     if (srv.response.activated)
     {
       ROS_INFO("Marker detector activated succesfully");
-      
+
       // TODO: Run scan pattern
     }
     else
@@ -59,28 +50,28 @@ void Planner::activateStag()
       ROS_WARN("Marker detector did not activate");
     }
   }
-}
-
-void moveByOffset(float x, float y, float z) {
-  geometry_msgs::PoseStamped msg;
-
-  msg.pose.position.x = x;
-  msg.pose.position.y = y;
-  msg.pose.position.z = z;
-
-  local_pos_pub.publish(msg);
+  else
+  {
+    ROS_ERROR("Call to ActivateStag service failed");
+  }
 }
 
 bool Planner::foundMarkerCallback(comm_pipeline::FoundMarker::Request &req, comm_pipeline::FoundMarker::Response &res)
 {
-  // TODO
-  if (delivery_state_ == DeliveryState::Scan) {
-    delivery_state_ = DeliveryState::Detected;
+  ROS_INFO("Found marker service called");
 
-    moveByOffset(res.position.point.x, res.position.point.y, res.position.point.z);
+  if (phase_manager_.getCurrentPhaseType() == PhaseType::Scan)
+  {
+    phase_manager_.changePhase(PhaseType::Detected);
+    res.success = true;
+  }
+  else
+  {
+    ROS_WARN("Found Marker called whilst not in Scan");
+    res.success = false;
   }
 
-  return false;
+  return true;
 }
 
 void Planner::stateCallback(const mavros_msgs::State::ConstPtr &msg)
@@ -119,12 +110,34 @@ void Planner::stateCallback(const mavros_msgs::State::ConstPtr &msg)
       // Send STag Activation
       activateStag();
     }
+    else
+    {
+      ROS_ERROR("Call to SetMode service failed");
+    }
   }
 }
 
 void Planner::navOutputCallback(const mavros_msgs::NavControllerOutput::ConstPtr &msg)
 {
   nav_output_ = *msg;
+
+  if (current_state_.mode != "GUIDED")
+  {
+    return;
+  }
+
+  // nav output returns in cm so convert to metres
+  float distance_to_wp = nav_output_.wp_dist / 100.0f;
+
+  ROS_INFO("%f, %d", distance_to_wp, nav_output_.wp_dist);
+
+  // If we havent arrived at the waypoint then return
+  if (distance_to_wp > wp_threshold_)
+  {
+    return;
+  }
+
+  phase_manager_.runCurrentPhase();
 }
 
 void Planner::markerCallback(const geometry_msgs::Point::ConstPtr &msg)
@@ -139,17 +152,4 @@ void Planner::missionCallback(const mavros_msgs::WaypointReached::ConstPtr &msg)
     delivery_waypoint_reached_ = true;
     ROS_INFO("Delivery Waypoint Reached");
   }
-}
-
-int main(int argc, char **argv)
-{
-  ros::init(argc, argv, "planner");
-  ros::NodeHandle nh;
-
-  Planner planner(&nh);
-
-  ROS_INFO("Communication Initialized... ");
-  ros::spin();
-
-  return 0;
 }
