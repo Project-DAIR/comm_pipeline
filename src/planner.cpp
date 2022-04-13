@@ -129,8 +129,6 @@ void Planner::navOutputCallback(const mavros_msgs::NavControllerOutput::ConstPtr
   // nav output returns in cm so convert to metres
   float distance_to_wp = nav_output_.wp_dist / 100.0f;
 
-  ROS_INFO("%f, %d", distance_to_wp, nav_output_.wp_dist);
-
   // If we havent arrived at the waypoint then return
   if (distance_to_wp > wp_threshold_)
   {
