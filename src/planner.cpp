@@ -140,11 +140,6 @@ void Planner::navOutputCallback(const mavros_msgs::NavControllerOutput::ConstPtr
   phase_manager_.runCurrentPhase();
 }
 
-void Planner::markerCallback(const geometry_msgs::Point::ConstPtr &msg)
-{
-  marker_pose_ = *msg;
-}
-
 void Planner::missionCallback(const mavros_msgs::WaypointReached::ConstPtr &msg)
 {
   if (msg->wp_seq >= delivery_waypoint_number_)

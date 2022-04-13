@@ -41,7 +41,6 @@ public:
     // Callbacks
     void stateCallback(const mavros_msgs::State::ConstPtr& msg);
     void navOutputCallback(const mavros_msgs::NavControllerOutput::ConstPtr& msg);
-    void markerCallback(const geometry_msgs::Point::ConstPtr& msg);
     void missionCallback(const mavros_msgs::WaypointReached::ConstPtr& msg);
     bool foundMarkerCallback(comm_pipeline::FoundMarker::Request &req, comm_pipeline::FoundMarker::Response &res);
 
