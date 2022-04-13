@@ -1,11 +1,14 @@
 #include "comm_pipeline/phase.h"
 
-Phase::Phase() : is_transition_needed_(false)
+Phase::Phase() : is_transition_needed_(false), prev_cmd_time_(ros::Time::now())
 {
   ros::NodeHandle nh;
+  ros::NodeHandle param_nh("~");
 
   local_pos_pub_ = nh.advertise<geometry_msgs::PoseStamped>("/mavros/setpoint_position/local", 10);
   get_target_client_ = nh.serviceClient<comm_pipeline::GetTarget>("/marker/get_target");
+
+  param_nh.param("cmd_time_interval", cmd_time_interval_, 2.0f);
 }
 
 void Phase::enter()
@@ -33,4 +36,17 @@ void Phase::sendMoveCommand(float x, float y, float z)
   ROS_INFO("Sending command (%f, %f, %f)", x, y, z);
 
   local_pos_pub_.publish(msg);
+}
+
+void Phase::sendThrottledMoveCommand(float x, float y, float z)
+{
+  // Limit the rate at which we can send move commands
+  if (ros::Time::now().sec - prev_cmd_time_.sec >= cmd_time_interval_)
+  {
+      sendMoveCommand(x, y, z);
+      prev_cmd_time_ = ros::Time::now();
+  }
+  else {
+    ROS_INFO("Skipping command due to throttling = (%f, %f, %f)", x, y, z);
+  }
 }

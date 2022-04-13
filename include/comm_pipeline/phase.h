@@ -33,6 +33,7 @@ public:
     virtual PhaseType getPhaseType() {return PhaseType::Invalid; };
 
     void sendMoveCommand(float x, float y, float z);
+    void sendThrottledMoveCommand(float x, float y, float z);
 
     bool isTransitionNeeded() { return is_transition_needed_; };
     virtual PhaseType getNextPhaseType() { return next_phase_type_; };
@@ -40,6 +41,9 @@ public:
 protected:
     bool is_transition_needed_;
     PhaseType next_phase_type_;
+    float cmd_time_interval_;
+
+    ros::Time prev_cmd_time_;
 
     ros::Publisher local_pos_pub_;
     ros::ServiceClient get_target_client_;
@@ -83,9 +87,6 @@ private:
     float marker_threshold_;
     float delivery_height_;
     float height_change_step_;
-    float cmd_time_interval_;
-
-    ros::Time prev_cmd_time_;
 
     void _enter() override;
     void _exit() override;

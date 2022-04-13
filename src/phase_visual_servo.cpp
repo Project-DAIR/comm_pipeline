@@ -7,7 +7,6 @@ PhaseVisualServo::PhaseVisualServo()
     param_nh.param("marker_threshold_", marker_threshold_, 0.25f);
     param_nh.param("delivery_height", delivery_height_, 5.0f);
     param_nh.param("height_change_step", height_change_step_, 2.0f);
-    param_nh.param("cmd_time_interval", cmd_time_interval_, 2.0f);
 }
 
 void PhaseVisualServo::_enter()
@@ -60,12 +59,7 @@ void PhaseVisualServo::handler()
             }
         }
         
-        // Limit the rate at which we can send move commands
-        if (ros::Time::now().sec - prev_cmd_time_.sec >= cmd_time_interval_)
-        {
-            sendMoveCommand(x_pos, y_pos, z_pos);
-            prev_cmd_time_ = ros::Time::now();
-        }
+        sendThrottledMoveCommand(x_pos, y_pos, z_pos);
     }
     else
     {
