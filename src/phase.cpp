@@ -17,6 +17,7 @@ void Phase::enter()
 
 void Phase::exit()
 {
+  ROS_INFO("Exiting %s Phase", getName().c_str());
   is_transition_needed_ = false;
   next_phase_type_ = getPhaseType();
 }
