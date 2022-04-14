@@ -6,6 +6,8 @@
 #include <comm_pipeline/GetTarget.h>
 #include <geometry_msgs/PoseStamped.h>
 
+#include "comm_pipeline/scanner.h"
+
 enum class PhaseType
 {
     Scan,
@@ -59,6 +61,7 @@ public:
 private:
     void _enter() override;
     void _exit() override;
+    Scanner scan_generator;
 };
 
 class PhaseDetected : public Phase

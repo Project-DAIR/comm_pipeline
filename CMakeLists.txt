@@ -27,7 +27,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-add_library(phases src/phase_manager.cpp src/phase.cpp src/phase_deliver.cpp src/phase_detected.cpp src/phase_ended.cpp src/phase_lost.cpp src/phase_scan.cpp src/phase_visual_servo.cpp)
+add_library(phases src/phase_manager.cpp src/phase.cpp src/phase_deliver.cpp src/phase_detected.cpp src/phase_ended.cpp src/phase_lost.cpp src/phase_scan.cpp src/phase_visual_servo.cpp src/scanner.cpp)
 
 
 add_executable(planner src/planner_node.cpp src/planner.cpp)
