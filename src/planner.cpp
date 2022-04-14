@@ -62,6 +62,7 @@ bool Planner::foundMarkerCallback(comm_pipeline::FoundMarker::Request &req, comm
 
   if (phase_manager_.getCurrentPhaseType() == PhaseType::Scan)
   {
+    phase_manager_.setDetectedPosition(req.position.point.x, req.position.point.y, req.position.point.z);
     phase_manager_.changePhase(PhaseType::Detected);
     res.success = true;
   }
@@ -127,10 +128,11 @@ void Planner::navOutputCallback(const mavros_msgs::NavControllerOutput::ConstPtr
   }
 
   // nav output returns in cm so convert to metres
-  float distance_to_wp = nav_output_.wp_dist / 100.0f;
+  float xy_distance_to_wp = nav_output_.wp_dist / 100.0f;
+  float total_dist_to_wp = pow(xy_distance_to_wp, 2) + pow(nav_output_.alt_error, 2);
 
   // If we havent arrived at the waypoint then return
-  if (distance_to_wp > wp_threshold_)
+  if (total_dist_to_wp > pow(wp_threshold_, 2))
   {
     return;
   }

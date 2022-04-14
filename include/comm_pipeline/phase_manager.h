@@ -14,6 +14,7 @@ public:
     PhaseType getCurrentPhaseType();
     void runCurrentPhase();
     void changePhase(PhaseType next_phase);
+    void setDetectedPosition(float x, float y, float z);
 
 private:
     // Phases

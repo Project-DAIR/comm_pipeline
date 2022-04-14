@@ -68,3 +68,9 @@ void PhaseManager::changePhase(PhaseType next_phase_type)
 
     current_phase_ = next_phase;
 }
+
+void PhaseManager::setDetectedPosition(float x, float y, float z) {
+    detected_phase_.detected_pos_x_ = x;
+    detected_phase_.detected_pos_y_ = y;
+    detected_phase_.detected_pos_z_ = z;
+}

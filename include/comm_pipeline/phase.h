@@ -68,9 +68,13 @@ public:
     PhaseType getPhaseType() { return PhaseType::Detected; };
     void handler() override;
 
+    float detected_pos_x_;
+    float detected_pos_y_;
+    float detected_pos_z_;
 private:
     void _enter() override;
     void _exit() override;
+
 };
 
 class PhaseVisualServo : public Phase
@@ -125,6 +129,7 @@ private:
 class PhaseEnded : public Phase
 {
 public:
+    PhaseEnded();
     std::string getName() { return "Ended"; };
     PhaseType getPhaseType() { return PhaseType::Ended; };
     void handler() override;
@@ -132,6 +137,8 @@ public:
 private:
     void _enter() override;
     void _exit() override;
+
+    ros::ServiceClient set_mode_client_;
 };
 
 #endif
