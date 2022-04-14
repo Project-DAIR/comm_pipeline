@@ -16,6 +16,8 @@ void Phase::enter()
   ROS_INFO("Entered %s Phase", getName().c_str());
   is_transition_needed_ = false;
   next_phase_type_ = getPhaseType();
+
+  _enter();
 }
 
 void Phase::exit()
@@ -23,6 +25,8 @@ void Phase::exit()
   ROS_INFO("Exiting %s Phase", getName().c_str());
   is_transition_needed_ = false;
   next_phase_type_ = getPhaseType();
+
+  _exit();
 }
 
 void Phase::sendMoveCommand(float x, float y, float z)
@@ -36,6 +40,8 @@ void Phase::sendMoveCommand(float x, float y, float z)
   ROS_INFO("Sending command (%f, %f, %f)", x, y, z);
 
   local_pos_pub_.publish(msg);
+
+  prev_cmd_time_ = ros::Time::now();
 }
 
 void Phase::sendThrottledMoveCommand(float x, float y, float z)
@@ -44,7 +50,6 @@ void Phase::sendThrottledMoveCommand(float x, float y, float z)
   if (ros::Time::now().sec - prev_cmd_time_.sec >= cmd_time_interval_)
   {
       sendMoveCommand(x, y, z);
-      prev_cmd_time_ = ros::Time::now();
   }
   else {
     ROS_INFO("Skipping command due to throttling = (%f, %f, %f)", x, y, z);

@@ -3,4 +3,4 @@ wp_threshold: 0.25
 marker_threshold: 0.25
 delivery_height: 5
 height_change_step: 2
-delivery_hold_time: 30
+delivery_hold_time: 60

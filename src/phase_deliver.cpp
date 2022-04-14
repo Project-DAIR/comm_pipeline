@@ -26,7 +26,8 @@ void PhaseDeliver::handler()
         return;
     }
 
-    if (ros::Time::now().sec - delivery_start_time_.sec > 30)
+    // TODO: Remove once delivery subsystem is integrated
+    if (ros::Time::now().sec - delivery_start_time_.sec > delivery_hold_time_)
     {
         delivery_started_ = false;
 

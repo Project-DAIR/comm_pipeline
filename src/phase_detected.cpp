@@ -2,6 +2,7 @@
 
 void PhaseDetected::_enter()
 {
+    sendMoveCommand(detected_pos_x_, detected_pos_y_, 0);
     return;
 }
 
@@ -20,9 +21,6 @@ void PhaseDetected::handler()
             ROS_INFO("Marker found. Transitioning to Visual Servo");
             is_transition_needed_ = true;
             next_phase_type_ = PhaseType::VisualServo;
-
-            // TODO: Do we want to move in detected state?
-            sendMoveCommand(get_target.response.position.x, get_target.response.position.y, get_target.response.position.z);
         }
         else
         {

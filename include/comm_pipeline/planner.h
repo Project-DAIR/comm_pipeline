@@ -35,7 +35,6 @@ public:
     // Services
     ros::ServiceClient set_mode_client_;
     ros::ServiceClient activate_stag_client_;
-    // ros::ServiceClient get_target_client_;
     ros::ServiceServer found_marker_server_;
 
     // Callbacks
@@ -46,20 +45,12 @@ public:
 
     // Initializers
     void initializeSubscribers();
-    // void initializePublishers();
     void initializeServices();
 
     void activateStag();
-    // void sendMoveCommand(float x, float y, float z);
-
-    // State handlers
-    void handleDetectedState();
-    void handleVisualServoState();
-    void handleDeliverState();
 
     mavros_msgs::State current_state_;
     mavros_msgs::NavControllerOutput nav_output_;
-    geometry_msgs::Point marker_pose_;
 
     bool changed_to_guided_;
     bool delivery_waypoint_reached_;
