@@ -19,7 +19,7 @@ bool get_target(comm_pipeline::GetTarget::Request &req,
   res.position.x = 0;
   res.position.y = 0;
   res.position.z = counter;
-  counter--;
+  counter -= 2;
 
   res.isTracked = true;
 

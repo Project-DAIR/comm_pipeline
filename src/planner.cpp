@@ -110,6 +110,9 @@ void Planner::stateCallback(const mavros_msgs::State::ConstPtr &msg)
 
       // Send STag Activation
       activateStag();
+
+      // Setup the phase manager
+      phase_manager_.initialize();
     }
     else
     {

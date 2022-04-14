@@ -74,3 +74,8 @@ void PhaseManager::setDetectedPosition(float x, float y, float z) {
     detected_phase_.detected_pos_y_ = y;
     detected_phase_.detected_pos_z_ = z;
 }
+
+void PhaseManager::initialize() {
+    current_phase_ = &scan_phase_;
+    current_phase_->enter();
+}

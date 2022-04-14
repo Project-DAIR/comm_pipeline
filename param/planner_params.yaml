@@ -1,6 +1,14 @@
-delivery_waypoint_number: 2
+# General params
+delivery_waypoint_number: 3
 wp_threshold: 0.25
+
+# Scan Phase params
+scan_diagonal: 25
+
+# Deliver Phase params
+delivery_hold_time: 15
+
+# Visual Servo Phase params
 marker_threshold: 0.25
-delivery_height: 5
 height_change_step: 2
-delivery_hold_time: 60
+delivery_height: 2

@@ -15,6 +15,7 @@ public:
     void runCurrentPhase();
     void changePhase(PhaseType next_phase);
     void setDetectedPosition(float x, float y, float z);
+    void initialize();
 
 private:
     // Phases
@@ -25,7 +26,7 @@ private:
     PhaseLost lost_phase_;
     PhaseEnded ended_phase_;
 
-    Phase *current_phase_ = &scan_phase_;
+    Phase *current_phase_;
 };
 
 #endif
