@@ -47,7 +47,7 @@ void Phase::sendMoveCommand(float x, float y, float z)
 void Phase::sendThrottledMoveCommand(float x, float y, float z)
 {
   // Limit the rate at which we can send move commands
-  if (ros::Time::now().sec - prev_cmd_time_.sec >= cmd_time_interval_)
+  if (ros::Time::now() - prev_cmd_time_ >= ros::Duration(cmd_time_interval_))
   {
       sendMoveCommand(x, y, z);
   }
