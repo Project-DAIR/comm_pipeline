@@ -14,7 +14,6 @@ Scanner::Scanner() : square_WPs_(5, geometry_msgs::Point()), is_finished_(false)
 
     internal_angle_ = 45.0 * PI / 180.0;
 
-    scan_diagonal_ = 2;
     side_ = 2 * cos(internal_angle_) * scan_diagonal_;
 }
 

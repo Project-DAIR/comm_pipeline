@@ -4,7 +4,7 @@ PhaseVisualServo::PhaseVisualServo()
 {
     ros::NodeHandle param_nh("~");
 
-    param_nh.param("marker_threshold_", marker_threshold_, 0.25f);
+    param_nh.param("marker_threshold", marker_threshold_, 2.0f);
     param_nh.param("delivery_height", delivery_height_, 5.0f);
     param_nh.param("height_change_step", height_change_step_, 2.0f);
 }
