@@ -4,6 +4,7 @@
 #include "comm_pipeline/FoundMarker.h"
 
 int counter = 15;
+float final_x = 2.2;
 
 bool activate(comm_pipeline::ActivateStag::Request &req,
               comm_pipeline::ActivateStag::Response &res)
@@ -16,10 +17,19 @@ bool activate(comm_pipeline::ActivateStag::Request &req,
 bool get_target(comm_pipeline::GetTarget::Request &req,
                 comm_pipeline::GetTarget::Response &res)
 {
-  res.position.x = 0;
-  res.position.y = 0;
+  res.position.x = 1;
+  res.position.y = 1;
   res.position.z = counter;
   counter -= 2;
+
+  counter = std::max(counter, 3);
+
+  if (counter <= 3) {
+    res.position.x = final_x;
+    res.position.y = 0.1;
+
+    final_x = std::max(0.0f, final_x - 1.0f);
+  }
 
   res.isTracked = true;
 
@@ -30,7 +40,6 @@ bool get_target(comm_pipeline::GetTarget::Request &req,
 
 int main(int argc, char **argv)
 {
-  srand(0);
 
   ros::init(argc, argv, "marker");
   ros::NodeHandle n("~");

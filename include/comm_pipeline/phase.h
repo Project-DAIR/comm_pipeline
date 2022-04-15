@@ -108,7 +108,14 @@ public:
     PhaseType getPhaseType() { return PhaseType::Deliver; };
     void handler() override;
 
+    void runDeliverySubsystem();
+    void refinePosition();
+
 private:
+    float marker_threshold_;
+    float delivery_height_;
+    bool in_position_;
+
     bool delivery_started_;
     int delivery_hold_time_;
     ros::Time delivery_start_time_;
