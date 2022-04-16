@@ -22,16 +22,12 @@ bool get_target(comm_pipeline::GetTarget::Request &req,
   res.position.z = counter;
   counter -= 2;
 
-  counter = std::max(counter, 3);
-
-  if (counter <= 3) {
-    res.position.x = final_x;
-    res.position.y = 0.1;
-
-    final_x = std::max(0.0f, final_x - 1.0f);
-  }
-
+  counter = std::max(counter, 7);
   res.isTracked = true;
+
+  if(counter <= 7) {
+    res.isTracked = false;
+  }
 
   ROS_INFO("GetTarget: [%f, %f, %f], %d", res.position.x, res.position.y, res.position.z, res.isTracked);
 
