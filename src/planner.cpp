@@ -125,7 +125,7 @@ void Planner::navOutputCallback(const mavros_msgs::NavControllerOutput::ConstPtr
 {
   nav_output_ = *msg;
 
-  if (current_state_.mode != "GUIDED")
+  if (current_state_.mode != "GUIDED" || !phase_manager_.isInitialized())
   {
     return;
   }
