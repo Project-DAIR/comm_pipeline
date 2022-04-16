@@ -46,7 +46,7 @@ protected:
     PhaseType next_phase_type_;
     float cmd_time_interval_;
 
-    ros::Time prev_cmd_time_;
+    Timer move_timer_;
 
     ros::Publisher local_pos_pub_;
     ros::ServiceClient get_target_client_;
