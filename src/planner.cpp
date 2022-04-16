@@ -60,7 +60,7 @@ bool Planner::foundMarkerCallback(comm_pipeline::FoundMarker::Request &req, comm
 {
   ROS_INFO("Found marker service called");
 
-  if (phase_manager_.getCurrentPhaseType() == PhaseType::Scan)
+  if (phase_manager_.isInitialized() && phase_manager_.getCurrentPhaseType() == PhaseType::Scan)
   {
     phase_manager_.setDetectedPosition(req.position.point.x, req.position.point.y, req.position.point.z);
     phase_manager_.changePhase(PhaseType::Detected);

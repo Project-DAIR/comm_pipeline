@@ -1,6 +1,6 @@
 #include "comm_pipeline/phase_manager.h"
 
-PhaseManager::PhaseManager()
+PhaseManager::PhaseManager() : initialized_(false)
 {
     ros::service::waitForService("marker/get_target");
     ROS_DEBUG("GetTarget service is reachable");
@@ -78,4 +78,10 @@ void PhaseManager::setDetectedPosition(float x, float y, float z) {
 void PhaseManager::initialize() {
     current_phase_ = &scan_phase_;
     current_phase_->enter();
+    initialized_ = true;
 }
+
+bool PhaseManager::isInitialized() {
+    return initialized_;
+}
+

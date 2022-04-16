@@ -16,6 +16,7 @@ public:
     void changePhase(PhaseType next_phase);
     void setDetectedPosition(float x, float y, float z);
     void initialize();
+    bool isInitialized();
 
 private:
     // Phases
@@ -27,6 +28,8 @@ private:
     PhaseEnded ended_phase_;
 
     Phase *current_phase_;
+
+    bool initialized_;
 };
 
 #endif
