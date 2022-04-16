@@ -19,32 +19,28 @@ void Scanner::calcSquareWPs()
     geometry_msgs::PoseStamped::ConstPtr msg = ros::topic::waitForMessage<geometry_msgs::PoseStamped>("mavros/local_position/pose");
 
     square_WPs_[0].x = 0;
-    square_WPs_[0].y = 0;
+    square_WPs_[0].y = -side_/2;;
     square_WPs_[0].z = -(msg->pose.position.z - scan_height_);
 
-    square_WPs_[1].x = 0;
-    square_WPs_[1].y = -side_/2;
+    square_WPs_[1].x = side_/2;;
+    square_WPs_[1].y = 0;
     square_WPs_[1].z = 0;
     
-    square_WPs_[2].x = side_/2;
-    square_WPs_[2].y = 0;
+    square_WPs_[2].x = 0;
+    square_WPs_[2].y = side_;
     square_WPs_[2].z = 0;
 
-    square_WPs_[3].x = 0;
-    square_WPs_[3].y = side_;
+    square_WPs_[3].x = -side_;
+    square_WPs_[3].y = 0;
     square_WPs_[3].z = 0;
 
-    square_WPs_[4].x = -side_;
-    square_WPs_[4].y = 0;
+    square_WPs_[4].x = 0;
+    square_WPs_[4].y = -side_;
     square_WPs_[4].z = 0;
 
-    square_WPs_[5].x = 0;
-    square_WPs_[5].y = -side_;
+    square_WPs_[5].x = side_/2;
+    square_WPs_[5].y = 0;
     square_WPs_[5].z = 0;
-
-    // square_WPs_[5].x = side_;
-    // square_WPs_[5].y = 0;
-    // square_WPs_[5].z = 0;
 
     next_wp_it_ = square_WPs_.begin();
 
