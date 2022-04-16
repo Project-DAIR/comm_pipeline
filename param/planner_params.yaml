@@ -5,6 +5,7 @@ cmd_time_interval: 1.0
 
 # Scan Phase params
 square_side: 10
+scan_height: 15
 
 # Deliver Phase params
 delivery_hold_time: 15

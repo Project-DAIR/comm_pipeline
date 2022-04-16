@@ -12,6 +12,7 @@ public:
     void calcSquareWPs(void);
     geometry_msgs::Point nextWP();
     bool isFinished();
+    float scan_height_;
 
 private:
     float side_;
