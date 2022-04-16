@@ -7,6 +7,7 @@
 #include <geometry_msgs/PoseStamped.h>
 
 #include "comm_pipeline/scanner.h"
+#include "comm_pipeline/timer.h"
 
 enum class PhaseType
 {
@@ -127,6 +128,8 @@ private:
 class PhaseLost : public Phase
 {
 public:
+    PhaseLost();
+
     std::string getName() { return "Lost"; };
     PhaseType getPhaseType() { return PhaseType::Lost; };
     void handler() override;
@@ -134,6 +137,25 @@ public:
 private:
     void _enter() override;
     void _exit() override;
+
+    void moveToLastKnownLocation();
+    void moveToHigherAltitude();
+    void moveToStartOfScan();
+    void foundMarker();
+    
+    enum class Behavior {
+        LastKnownLocation,
+        AltitudeIncrease,
+        RestartScan
+    };
+
+    Behavior current_behaviour_;
+    float altitude_increase_;
+
+    Timer behaviour_timer_;
+    
+    bool moved_to_last_known_;
+    bool moved_to_altitude_;
 };
 
 class PhaseEnded : public Phase
