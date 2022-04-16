@@ -12,15 +12,13 @@ public:
     void calcSquareWPs(void);
     geometry_msgs::Point nextWP();
     bool isFinished();
+    float scan_height_;
 
 private:
     float side_;
-    float scan_diagonal_;
-    float internal_angle_;
     bool is_finished_;
 
     geometry_msgs::Point next_wp_;
-    // std::vector<geometry_msgs::Point> square_WPs_(4, geometry_msgs::Point());
     std::vector<geometry_msgs::Point> square_WPs_;
     std::vector<geometry_msgs::Point>::iterator next_wp_it_;
 };
