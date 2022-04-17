@@ -42,8 +42,6 @@ void Planner::activateStag()
     if (srv.response.activated)
     {
       ROS_INFO("Marker detector activated succesfully");
-
-      // TODO: Run scan pattern
     }
     else
     {

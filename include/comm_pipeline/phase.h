@@ -36,7 +36,7 @@ public:
     virtual PhaseType getPhaseType() {return PhaseType::Invalid; };
 
     void sendMoveCommand(float x, float y, float z);
-    void sendThrottledMoveCommand(float x, float y, float z);
+    bool sendThrottledMoveCommand(float x, float y, float z);
 
     bool isTransitionNeeded() { return is_transition_needed_; };
     virtual PhaseType getNextPhaseType() { return next_phase_type_; };
@@ -62,7 +62,9 @@ public:
 private:
     void _enter() override;
     void _exit() override;
-    Scanner scan_generator;
+    Scanner scan_generator_;
+    bool move_accepted_;
+    geometry_msgs::Point prev_wp_;
 };
 
 class PhaseDetected : public Phase

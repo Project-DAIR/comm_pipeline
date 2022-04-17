@@ -47,14 +47,17 @@ void Phase::sendMoveCommand(float x, float y, float z)
   move_timer_.restart();
 }
 
-void Phase::sendThrottledMoveCommand(float x, float y, float z)
+bool Phase::sendThrottledMoveCommand(float x, float y, float z)
 {
   // Limit the rate at which we can send move commands
   if (move_timer_.isFinished())
   {
-      sendMoveCommand(x, y, z);
+    sendMoveCommand(x, y, z);
+    return true;
   }
-  else {
+  else
+  {
     ROS_INFO("Skipping command due to throttling = (%f, %f, %f)", x, y, z);
+    return false;
   }
 }
