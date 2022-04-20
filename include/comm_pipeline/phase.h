@@ -119,9 +119,7 @@ private:
     float delivery_height_;
     bool in_position_;
 
-    bool delivery_started_;
-    int delivery_hold_time_;
-    ros::Time delivery_start_time_;
+    Timer delivery_timer_;
 
     void _enter() override;
     void _exit() override;
