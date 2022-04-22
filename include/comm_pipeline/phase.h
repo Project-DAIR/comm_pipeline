@@ -5,6 +5,7 @@
 #include <ros/ros.h>
 #include <comm_pipeline/GetTarget.h>
 #include <geometry_msgs/PoseStamped.h>
+#include <std_msgs/Bool.h>
 
 #include "comm_pipeline/scanner.h"
 #include "comm_pipeline/timer.h"
@@ -114,10 +115,16 @@ public:
     void runDeliverySubsystem();
     void refinePosition();
 
+    void endDeliveryCallback(const std_msgs::Bool::ConstPtr& msg);
+
 private:
+    ros::Publisher start_delivery_pub_;
+    ros::Subscriber end_delivery_sub_;
+
     float marker_threshold_;
     float delivery_height_;
     bool in_position_;
+    bool delivery_finished_;
 
     Timer delivery_timer_;
 

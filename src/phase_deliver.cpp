@@ -1,6 +1,6 @@
 #include "comm_pipeline/phase.h"
 
-PhaseDeliver::PhaseDeliver() : in_position_(false)
+PhaseDeliver::PhaseDeliver() : in_position_(false), delivery_finished_(true)
 {
     ros::NodeHandle param_nh("~");
     param_nh.param("delivery_marker_threshold", marker_threshold_, 0.5f);
@@ -11,6 +11,9 @@ PhaseDeliver::PhaseDeliver() : in_position_(false)
     param_nh.param("delivery_hold_time", delivery_hold_time, 60.0f);
 
     delivery_timer_.setDuration(delivery_hold_time);
+
+    start_delivery_pub_ = ros::NodeHandle().advertise<std_msgs::Bool>("delivery_sequence/delivery_start", 1000);
+    end_delivery_sub_ = ros::NodeHandle().subscribe<std_msgs::Bool>("delivery_sequence/delivery_end", 10, &PhaseDeliver::endDeliveryCallback, this);
 }
 
 void PhaseDeliver::_enter()
@@ -32,6 +35,9 @@ void PhaseDeliver::handler()
     // If in position then run delivery subsystem
     if (in_position_)
     {
+        std_msgs::Bool msg;
+        msg.data = true;
+        start_delivery_pub_.publish(msg);
         delivery_timer_.start();
         ROS_INFO("In position: Running delivery subsystem");
         runDeliverySubsystem();
@@ -41,7 +47,7 @@ void PhaseDeliver::handler()
 void PhaseDeliver::runDeliverySubsystem()
 {
     // TODO: Remove once delivery subsystem is integrated
-    if (delivery_timer_.isFinished())
+    if (delivery_timer_.isFinished() || delivery_finished_)
     {
         is_transition_needed_ = true;
         next_phase_type_ = PhaseType::Ended;
@@ -82,4 +88,8 @@ void PhaseDeliver::refinePosition()
             sendThrottledMoveCommand(get_target.response.position.x, get_target.response.position.y, 0);
         }
     }
+}
+
+void PhaseDeliver::endDeliveryCallback(const std_msgs::Bool::ConstPtr& msg) {
+    delivery_finished_ = msg->data;
 }
