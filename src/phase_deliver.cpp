@@ -1,6 +1,6 @@
 #include "comm_pipeline/phase.h"
 
-PhaseDeliver::PhaseDeliver() : in_position_(false), delivery_finished_(true)
+PhaseDeliver::PhaseDeliver() : in_position_(false), delivery_finished_(false)
 {
     ros::NodeHandle param_nh("~");
     param_nh.param("delivery_marker_threshold", marker_threshold_, 0.5f);
