@@ -62,10 +62,14 @@ void PhaseDeliver::refinePosition()
     if (get_target_client_.call(get_target))
     {
         // If marker not tracked go to Lost state
-        if (!get_target.response.isTracked)
+        if (!get_target.response.isTracked && in_position_)
+        {
+            ROS_WARN("Lost marker while delivering. Holding position");
+            return;
+        }
+        else if (!get_target.response.isTracked) 
         {
             ROS_WARN("Lost marker, transitioning to Lost state");
-
             is_transition_needed_ = true;
             next_phase_type_ = PhaseType::Lost;
             return;
