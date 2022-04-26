@@ -52,6 +52,17 @@ void PhaseDeliver::runDeliverySubsystem()
         is_transition_needed_ = true;
         next_phase_type_ = PhaseType::Ended;
         ROS_INFO("Finished delivery. Transitioning to Ended");
+
+        if (delivery_finished_) {
+            ROS_INFO("Finished delivery due to received command");
+        }
+        else if (delivery_timer_.isFinished())
+        {
+            ROS_INFO("Finished delivery due to timeout");
+        }
+        else {
+            ROS_ERROR("This should not have happened");
+        }
     }
 }
 
