@@ -8,14 +8,14 @@ PhaseEnded::PhaseEnded() {
 
 void PhaseEnded::_enter() {
     mavros_msgs::SetMode mode_change;
-    mode_change.request.custom_mode = "QRTL";
+    mode_change.request.custom_mode = "AUTO";
 
     if (set_mode_client_.call(mode_change))
     {
       // Make sure mode change was sent to the FCU
       if (!mode_change.response.mode_sent)
       {
-        ROS_ERROR("QRTL mode was not set by MAVROS");
+        ROS_ERROR("AUTO mode was not set by MAVROS");
         return;
       }
     }
