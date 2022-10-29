@@ -18,7 +18,8 @@ private:
     float side_;
     bool is_finished_;
 
-    geometry_msgs::Point next_wp_;
+    float arrival_heading_;
+
     std::vector<geometry_msgs::Point> square_WPs_;
     std::vector<geometry_msgs::Point>::iterator next_wp_it_;
 };

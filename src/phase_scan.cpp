@@ -18,7 +18,6 @@ void PhaseScan::_exit()
 void PhaseScan::handler()
 {
     if (!move_accepted_) {
-        // ROS_INFO_THROTTLED(2,)
         ROS_INFO("Resending previous scan wp = (%f, %f, %f)", prev_wp_.x, prev_wp_.y, prev_wp_.z);
         move_accepted_ = sendThrottledMoveCommand(prev_wp_.x, prev_wp_.y, prev_wp_.z);
         return;
