@@ -93,11 +93,23 @@ public:
     PhaseType getPhaseType() { return PhaseType::VisualServo; };
     void handler() override;
 
+    void markerCallback(const geometry_msgs::Point::ConstPtr& msg);
+
 private:
+    ros::Subscriber marker_pos_sub_;
+
     // Params
     float marker_threshold_;
+    float marker_timeout_;
     float delivery_height_;
     float height_change_step_;
+    float required_time_for_stability_;
+
+    bool is_running_;
+    bool prev_stable_;
+
+    ros::Time marker_last_seen_time_;
+    ros::Time stable_start_time_;
 
     void _enter() override;
     void _exit() override;

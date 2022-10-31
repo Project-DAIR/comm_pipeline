@@ -100,7 +100,7 @@ void PhaseDeliver::refinePosition()
         }
         else {
             ROS_INFO("Refining position = (%f, %f, %f)", x_pos, y_pos, z_pos);
-            sendThrottledMoveCommand(get_target.response.position.x, get_target.response.position.y, 0);
+            sendThrottledMoveCommand(x_pos, y_pos, z_pos);
         }
     }
 }
