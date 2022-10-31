@@ -106,11 +106,11 @@ void Planner::stateCallback(const mavros_msgs::State::ConstPtr &msg)
       ROS_INFO("Guided mode enabled...");
       changed_to_guided_ = true;
 
-      // Send STag Activation
-      activateStag();
-
       // Setup the phase manager
       phase_manager_.initialize();
+
+      // Send STag Activation
+      activateStag();
     }
     else
     {
@@ -137,13 +137,20 @@ void Planner::navOutputCallback(const mavros_msgs::NavControllerOutput::ConstPtr
   {
     return;
   }
+  
+  // Dont run faster than 1 Hz
+  if (ros::Time::now() - prev_nav_time_ < ros::Duration(1.0))
+  {
+    return;
+  }
 
   phase_manager_.runCurrentPhase();
+  prev_nav_time_ = ros::Time::now();
 }
 
 void Planner::missionCallback(const mavros_msgs::WaypointReached::ConstPtr &msg)
 {
-  if (msg->wp_seq >= delivery_waypoint_number_)
+  if (msg->wp_seq == delivery_waypoint_number_)
   {
     delivery_waypoint_reached_ = true;
     ROS_INFO("Delivery Waypoint Reached");

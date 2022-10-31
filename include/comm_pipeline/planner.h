@@ -58,6 +58,7 @@ public:
     // Parameters
     int delivery_waypoint_number_;
     float wp_threshold_;
+    ros::Time prev_nav_time_;
     
     PhaseManager phase_manager_;
 };
