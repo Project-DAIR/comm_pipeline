@@ -13,7 +13,8 @@ delivery_marker_threshold: 1.0
 
 # Visual Servo Phase params
 vs_marker_threshold: 2.0
-height_change_step: 4
+marker_timeout: 5.0
+height_change_step: 2
 delivery_height: 3.5
 
 # Lost Phase params
