@@ -8,7 +8,7 @@ int main(int argc, char **argv)
 
   Planner planner(&nh);
 
-  ROS_INFO("Communication Initialized... ");
+  ROS_INFO("Communication Initialized. Ready to fly!");
   ros::spin();
 
   return 0;
