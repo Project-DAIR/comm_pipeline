@@ -12,8 +12,8 @@ PhaseDeliver::PhaseDeliver() : in_position_(false), delivery_finished_(false)
 
     delivery_timer_.setDuration(delivery_hold_time);
 
-    start_delivery_pub_ = ros::NodeHandle().advertise<std_msgs::Bool>("delivery_sequence/delivery_start", 1000);
-    end_delivery_sub_ = ros::NodeHandle().subscribe<std_msgs::Bool>("delivery_sequence/delivery_end", 10, &PhaseDeliver::endDeliveryCallback, this);
+    start_delivery_pub_ = ros::NodeHandle().advertise<std_msgs::Bool>("/start_delivery", 1000);
+    end_delivery_sub_ = ros::NodeHandle().subscribe<std_msgs::Bool>("/done_delivery", 10, &PhaseDeliver::endDeliveryCallback, this);
 }
 
 void PhaseDeliver::_enter()
