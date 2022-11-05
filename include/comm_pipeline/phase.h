@@ -137,6 +137,7 @@ private:
     float delivery_height_;
     bool in_position_;
     bool delivery_finished_;
+    bool delivery_started_;
 
     Timer delivery_timer_;
 

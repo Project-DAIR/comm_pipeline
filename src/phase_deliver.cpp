@@ -1,6 +1,6 @@
 #include "comm_pipeline/phase.h"
 
-PhaseDeliver::PhaseDeliver() : in_position_(false), delivery_finished_(false)
+PhaseDeliver::PhaseDeliver() : in_position_(false), delivery_finished_(false), delivery_started_(false)
 {
     ros::NodeHandle param_nh("~");
     param_nh.param("delivery_marker_threshold", marker_threshold_, 0.5f);
@@ -20,6 +20,8 @@ void PhaseDeliver::_enter()
 {
     // Reset incase we reenter delivery
     in_position_ = false;
+    delivery_finished_ = false;
+    delivery_started_ = false;
     return;
 }
 
@@ -35,9 +37,15 @@ void PhaseDeliver::handler()
     // If in position then run delivery subsystem
     if (in_position_)
     {
-        std_msgs::Bool msg;
-        msg.data = true;
-        start_delivery_pub_.publish(msg);
+
+        // Only publish start delivery once
+        if (!delivery_started_)
+        {
+            std_msgs::Bool msg;
+            msg.data = true;
+            start_delivery_pub_.publish(msg);
+            delivery_started_ = true;
+        }
         delivery_timer_.start();
         ROS_INFO("In position: Running delivery subsystem");
         runDeliverySubsystem();
