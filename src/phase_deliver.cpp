@@ -41,10 +41,10 @@ void PhaseDeliver::handler()
         // Only publish start delivery once
         if (!delivery_started_)
         {
+            delivery_started_ = true;
             std_msgs::Bool msg;
             msg.data = true;
             start_delivery_pub_.publish(msg);
-            delivery_started_ = true;
         }
         delivery_timer_.start();
         ROS_INFO("In position: Running delivery subsystem");
