@@ -68,9 +68,12 @@ void PhaseVisualServo::markerCallback(const geometry_msgs::Point::ConstPtr &msg)
         z_pos = std::min(std::max(height_change, -height_change_step_), height_change_step_);
 
         // If height is also within the threshold then transition to delivery
-        if (abs(x_pos) < 0.1 * marker_threshold_ && abs(y_pos) < 0.1 * marker_threshold_ && abs(z_pos) < 0.1 * marker_threshold_)
+        if (abs(x_pos) < 0.1 * marker_threshold_ && abs(y_pos) < 0.1 * marker_threshold_ && abs(z_pos) < 0.25 * marker_threshold_)
         {
             ROS_INFO("Marker within threshold. Waiting for stability...");
+
+            // Dont send any height changes - prevents oscilatting up and down
+            z_pos = 0;
 
             if (!prev_stable_)
             {
