@@ -6,7 +6,7 @@
 
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Point.h>
-
+#include <std_msgs/Float64.h>
 #include <mavros_msgs/SetMode.h>
 #include <mavros_msgs/State.h>
 #include <mavros_msgs/NavControllerOutput.h>
@@ -22,7 +22,7 @@
 class Planner
 {
 public:
-    Planner(ros::NodeHandle* nodehandle);
+    Planner(ros::NodeHandle *nodehandle);
 
     ros::NodeHandle nh_;
 
@@ -38,9 +38,9 @@ public:
     ros::ServiceServer found_marker_server_;
 
     // Callbacks
-    void stateCallback(const mavros_msgs::State::ConstPtr& msg);
-    void navOutputCallback(const mavros_msgs::NavControllerOutput::ConstPtr& msg);
-    void missionCallback(const mavros_msgs::WaypointReached::ConstPtr& msg);
+    void stateCallback(const mavros_msgs::State::ConstPtr &msg);
+    void navOutputCallback(const mavros_msgs::NavControllerOutput::ConstPtr &msg);
+    void missionCallback(const mavros_msgs::WaypointReached::ConstPtr &msg);
     bool foundMarkerCallback(comm_pipeline::FoundMarker::Request &req, comm_pipeline::FoundMarker::Response &res);
 
     // Initializers
@@ -54,13 +54,13 @@ public:
 
     bool changed_to_guided_;
     bool delivery_waypoint_reached_;
-    
+
     // Parameters
     int delivery_waypoint_number_;
     float wp_threshold_;
     ros::Time prev_nav_time_;
-    
+
     PhaseManager phase_manager_;
 };
 
-#endif 
+#endif

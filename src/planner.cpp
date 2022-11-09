@@ -63,6 +63,9 @@ bool Planner::foundMarkerCallback(comm_pipeline::FoundMarker::Request &req, comm
     phase_manager_.setDetectedPosition(req.position.point.x, req.position.point.y, req.position.point.z);
     phase_manager_.changePhase(PhaseType::Detected);
     res.success = true;
+
+    std_msgs::Float64::ConstPtr msg = ros::topic::waitForMessage<std_msgs::Float64>("mavros/global_position/rel_alt");
+    ROS_WARN("Marker detected at FC Alt = %f | Marker Z = %f", msg->data, req.position.point.z);
   }
   else
   {
