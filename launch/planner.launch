@@ -1,0 +1,13 @@
+<launch>
+  <arg name="sitl" default="false"/>
+
+  <!-- Run the offboard position controller -->
+  <node name="planner" pkg="comm_pipeline" type="planner" output="screen">
+    <rosparam file="$(find comm_pipeline)/param/planner_params.yaml"/>
+  </node>
+
+  <!-- Run MAVROS -->
+  <!-- <include file="$(find mavros)/launch/apm.launch">
+    <arg if="$(arg sitl)" name="fcu_url" value="udp://127.0.0.1:14551@14555"/>
+  </include> -->
+</launch>

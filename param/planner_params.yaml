@@ -1,0 +1,22 @@
+# General params
+delivery_waypoint_number: 2
+wp_threshold: 0.25
+move_cmd_interval: 1.0
+
+# Scan Phase params
+square_side: 10
+scan_height: 15
+
+# Deliver Phase params
+delivery_hold_time: 30
+delivery_marker_threshold: 1.0
+
+# Visual Servo Phase params
+vs_marker_threshold: 2.0
+marker_timeout: 5.0
+height_change_step: 2
+delivery_height: 3.5
+
+# Lost Phase params
+altitude_increase: 4.0
+behaviour_wait_time: 2.0
