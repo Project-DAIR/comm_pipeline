@@ -6,6 +6,7 @@
 #include <comm_pipeline/GetTarget.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/Int16.h>
 
 #include "comm_pipeline/scanner.h"
 #include "comm_pipeline/timer.h"
@@ -94,9 +95,11 @@ public:
     void handler() override;
 
     void markerCallback(const geometry_msgs::Point::ConstPtr& msg);
+    void lidarCallback(const std_msgs::Int16::ConstPtr& msg);
 
 private:
     ros::Subscriber marker_pos_sub_;
+    ros::Subscriber lidar_sub_;
 
     // Params
     float marker_threshold_;
@@ -107,6 +110,8 @@ private:
 
     bool is_running_;
     bool prev_stable_;
+
+    int lidar_height_cm_;
 
     ros::Time marker_last_seen_time_;
     ros::Time stable_start_time_;
