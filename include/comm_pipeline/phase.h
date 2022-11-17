@@ -134,12 +134,17 @@ public:
     void refinePosition();
 
     void endDeliveryCallback(const std_msgs::Bool::ConstPtr& msg);
+    void markerCallback(const geometry_msgs::Point::ConstPtr& msg);
+    void lidarCallback(const std_msgs::Int16::ConstPtr& msg);
 
 private:
     ros::Publisher start_delivery_pub_;
     ros::Subscriber end_delivery_sub_;
+    ros::Subscriber marker_pos_sub_;
+    ros::Subscriber lidar_sub_;
 
     float marker_threshold_;
+    float marker_timeout_;
     float delivery_height_;
     bool in_position_;
     bool delivery_finished_;
@@ -147,6 +152,10 @@ private:
     float marker_offset_;
 
     Timer delivery_timer_;
+
+    bool is_running_;
+    int lidar_height_cm_;
+    ros::Time marker_last_seen_time_;
 
     void _enter() override;
     void _exit() override;
