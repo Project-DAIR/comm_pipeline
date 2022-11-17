@@ -107,6 +107,7 @@ private:
     float delivery_height_;
     float height_change_step_;
     float required_time_for_stability_;
+    float marker_offset_;
 
     bool is_running_;
     bool prev_stable_;
@@ -143,6 +144,7 @@ private:
     bool in_position_;
     bool delivery_finished_;
     bool delivery_started_;
+    float marker_offset_;
 
     Timer delivery_timer_;
 

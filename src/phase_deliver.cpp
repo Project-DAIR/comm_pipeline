@@ -5,6 +5,7 @@ PhaseDeliver::PhaseDeliver() : in_position_(false), delivery_finished_(false), d
     ros::NodeHandle param_nh("~");
     param_nh.param("delivery_marker_threshold", marker_threshold_, 0.5f);
     param_nh.param("delivery_height", delivery_height_, 3.0f);
+    param_nh.param("marker_offset", marker_offset_, 0.5f);
 
     // TODO: Remove when delivery subsystem is integrated
     float delivery_hold_time;
@@ -95,7 +96,7 @@ void PhaseDeliver::refinePosition()
         }
 
         float x_pos = get_target.response.position.x;
-        float y_pos = get_target.response.position.y;
+        float y_pos = get_target.response.position.y - marker_offset_;
         float z_pos = -(get_target.response.position.z - delivery_height_);
 
 

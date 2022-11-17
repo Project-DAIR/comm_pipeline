@@ -9,6 +9,7 @@ PhaseVisualServo::PhaseVisualServo()
     param_nh.param("delivery_height", delivery_height_, 5.0f);
     param_nh.param("height_change_step", height_change_step_, 2.0f);
     param_nh.param("required_time_for_stability", required_time_for_stability_, 2.5f);
+    param_nh.param("marker_offset", marker_offset_, 0.5f);
 
     is_running_ = false;
     prev_stable_ = false;
@@ -57,7 +58,7 @@ void PhaseVisualServo::markerCallback(const geometry_msgs::Point::ConstPtr &msg)
     marker_last_seen_time_ = ros::Time::now();
 
     float x_pos = msg->x;
-    float y_pos = msg->y;
+    float y_pos = msg->y - marker_offset_;
     float z_pos = 0;
 
     // If marker is within a threshold then we reduce our height
@@ -76,7 +77,7 @@ void PhaseVisualServo::markerCallback(const geometry_msgs::Point::ConstPtr &msg)
             ROS_INFO("Marker within threshold. Waiting for stability...");
 
             // Dont send any height changes - prevents oscilatting up and down
-            z_pos = 0;
+            // z_pos = 0;
 
             if (!prev_stable_)
             {
