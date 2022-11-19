@@ -111,7 +111,7 @@ private:
     bool is_running_;
     bool prev_stable_;
 
-    int lidar_height_cm_;
+    float lidar_height_cm_;
 
     ros::Time marker_last_seen_time_;
     ros::Time stable_start_time_;

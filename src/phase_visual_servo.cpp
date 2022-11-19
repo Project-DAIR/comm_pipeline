@@ -12,7 +12,7 @@ PhaseVisualServo::PhaseVisualServo()
 
     is_running_ = false;
     prev_stable_ = false;
-    lidar_height_cm_ = 1; // 1 is always ignored
+    lidar_height_cm_ = 1.0; // 1 is always ignored
 
     marker_pos_sub_ = ros::NodeHandle().subscribe<geometry_msgs::Point>("marker/smooth_pose", 10, &PhaseVisualServo::markerCallback, this);
     lidar_sub_ = ros::NodeHandle().subscribe<>("/lidar_correction/smooth_lidar", 10, &PhaseVisualServo::lidarCallback, this);
@@ -64,19 +64,19 @@ void PhaseVisualServo::markerCallback(const geometry_msgs::Point::ConstPtr &msg)
     if (abs(x_pos) < marker_threshold_ && abs(y_pos) < marker_threshold_)
     {
         // Use lidar if it is not giving us a value of 1, otherwise use the markers z
-        float estimated_height = lidar_height_cm_ != 1 ? lidar_height_cm_ / 100 : msg->z;
+        float estimated_height = lidar_height_cm_ != 1 ? lidar_height_cm_ / 100.0 : msg->z;
         float height_change = -(estimated_height - delivery_height_);
 
         // Clamp so we dont change height too quickly
         z_pos = std::min(std::max(height_change, -height_change_step_), height_change_step_);
 
         // If height is also within the threshold then transition to delivery
-        if (abs(x_pos) < 0.1 * marker_threshold_ && abs(y_pos) < 0.1 * marker_threshold_ && abs(z_pos) < 0.1 * marker_threshold_)
+        if (abs(x_pos) < 0.1 * marker_threshold_ && abs(y_pos) < 0.1 * marker_threshold_ && abs(z_pos) < 0.25 * marker_threshold_)
         {
             ROS_INFO("Marker within threshold. Waiting for stability...");
 
             // Dont send any height changes - prevents oscilatting up and down
-            z_pos = 0;
+	    z_pos = 0;
 
             if (!prev_stable_)
             {
@@ -105,7 +105,7 @@ void PhaseVisualServo::lidarCallback(const std_msgs::Int16::ConstPtr &msg)
 {
     if (msg->data < 0)
     {
-        lidar_height_cm_ = 1;
+        lidar_height_cm_ = 1.0;
     }
     else
     {
