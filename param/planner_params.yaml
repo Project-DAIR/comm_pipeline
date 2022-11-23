@@ -15,7 +15,7 @@ delivery_marker_threshold: 1.0
 vs_marker_threshold: 2.0
 marker_timeout: 5.0
 height_change_step: 1
-delivery_height: 3.0
+delivery_height: 3.5
 
 # Lost Phase params
 altitude_increase: 4.0
