@@ -70,6 +70,12 @@ void PhaseVisualServo::markerCallback(const geometry_msgs::Point::ConstPtr &msg)
         // Clamp so we dont change height too quickly
         z_pos = std::min(std::max(height_change, -height_change_step_), height_change_step_);
 
+        // For fine grained movements, only move one axis at a time
+        if (x_pos >= y_pos)
+            y_pos = 0;
+        else
+            x_pos = 0;
+
         // If height is also within the threshold then transition to delivery
         if (abs(x_pos) < 0.2 * marker_threshold_ && abs(y_pos) < 0.2 * marker_threshold_ && abs(z_pos) < 0.25 * marker_threshold_)
         {
