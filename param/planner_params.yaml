@@ -9,13 +9,13 @@ scan_height: 15
 
 # Deliver Phase params
 delivery_hold_time: 60
-delivery_marker_threshold: 1.0
+delivery_marker_threshold: 0.4
 
 # Visual Servo Phase params
 vs_marker_threshold: 2.0
 marker_timeout: 5.0
 height_change_step: 1
-delivery_height: 3.5
+delivery_height: 5.0
 
 # Lost Phase params
 altitude_increase: 4.0
